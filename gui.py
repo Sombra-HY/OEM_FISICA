@@ -50,5 +50,7 @@ def menu():
 6 - Número de ondas (k)
 7 - Frequência angular (w)""")
     x = input(" R: ")
+    valor = float(input("Valor: "))
+
 
 menu()
