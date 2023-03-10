@@ -21,6 +21,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 def print_msg_box(msg, indent=1, width=None, title=None):
+    # Função do quadro do menu
     """Print message-box with optional title."""
     lines = msg.split('\n')
     space = " " * indent
@@ -36,119 +37,146 @@ def print_msg_box(msg, indent=1, width=None, title=None):
 print(bcolors.WARNING + ra)
 
 def write(s):
+# Função que mostra o texto de maneira assíncrona
     for c in s:
         sys.stdout.write(c)
         sys.stdout.flush()
-        time.sleep(0)
+        time.sleep(5E-5)
 
 def tranf(x):
-    a = x.split("e")
-    return (float(a[0]) * (10 ** int(a[1])))
+    # Trata os dados do input, no caso o (3.44E10)
+    # Notação Científica
+
+    a = x.split("E")
+    return (float(a[0]) * (10 ** int(a[len(a)-1])))
+
 
 
 def menu():
+    # Função que mostra o menu para o usuário escolher a entrada que ele possui
     var = 1
+    write(
+        bcolors.ENDC + "\nOndas eletromagnéticas: são oscilações produzidas por campos elétricos e magnéticos, que se propagam através do vácuo ou de meios materiais, transportando energia."
+                       "\nCampo elétrico: é uma importante grandeza física definida como o módulo da força elétrica produzida em cada unidade de carga elétrica."
+                       "\nCampo magnético: é a região do espaço em que as cargas em movimento sofrem a ação de uma força magnética; é responsável pela atração e repulsão dos polos magnéticos."
+                       "\nIntensidade: ela mede a quantidade de energia que passa por unidade de tempo e por unidade de área em um determinado ponto do espaço."
+                       "\nFrequência: diz respeito ao número de oscilações que o seu campo elétrico realiza a cada segundo."
+                       "\nComprimento de onda: é o espaço pelo qual a onda propaga-se até que se forme uma oscilação completa."
+                       "\nNúmero de onda: é proporcional à frequência e à energia do fóton."
+                       "\nFrequência angular: representa uma taxa de variação de uma grandeza angular, nem sempre relacionada ao movimento de rotação." + bcolors.OKBLUE
+    )
+    # Recursão para o programa nao finalizar com apenas uma execução
     while(var !=0 ):
         write(
-            bcolors.ENDC + "\nPara utilizar o programa escolha a opcao de acordo com o dado que voce possui:\n" + bcolors.OKCYAN)
+            bcolors.ENDC + "\n\n\nPara utilizar o programa escolha a opcao de acordo com o dado que voce possui."
+                           "\nPara a entrada de dados sempre coloque 'E' para notação científica (ex:. 22Hz: 22E0)\n" + bcolors.OKCYAN)
 
-        print_msg_box("""1 - Campo elétrico (Em)
-    2 - Campo magnético (Bm)
-    3 - Intensidade (I)
-    4 - Frequência (f)
-    5 - Comprimento de onda (λ)
-    6 - Número de ondas (k)
-    7 - Frequência angular (w)""")
+        print_msg_box("""    1 - Campo elétrico (Em) [V/m]
+    2 - Campo magnético (Bm) [T]
+    3 - Intensidade (I) [W/m²]
+    4 - Frequência (f) [Hz]
+    5 - Comprimento de onda (λ) [m]
+    6 - Número de ondas (k) [rad/m]
+    7 - Frequência angular (w) [rad/s]""")
 
         x = int(input(" R: "))
         valor = input("Valor: ")
-        valor= tranf(valor)
+        valor = tranf(valor)
 
-        funcoes = [Em, Bm, I, f, k, compr, w]
-        for fun in funcoes:
+        # chamada de funcoes
+        for fun in [Em, Bm, I, f, k, compr, w]:
             fun(x,valor )
         var = int(input("\n\nSe deseja continuar digite 1 (SIM) ou 0 (NAO):"))
 
-
-
-
-
-
 def round_it(x):
+    # Função que arredonda o resultado para três algarismos significativos
     return round(x, 3- int(floor(log10(abs(x))))-1)
 
-# FORMULAS_____________________________________
+# FÓRMULAS_____________________________________
 
-C_velocidadeLuz = 2.998*10**8
-u0 = 4 * pi  * 10 ** -7
+C_velocidadeLuz = 3E8
+u0 = 4E-7*pi
+
+# O usuário escolhe no menu o dado com qual ele deseja entrar. Após escolher a entrada,
+# todas as funções serão executadas, porém é repassada uma variável de controle (o 'x')
+# onde a fórmula só será calculada nas funções onde o 'x' for compatível.
+# Por exemplo, no caso da intensidade (parâmetro de saída), os únicos valores
+# de entrada possíveis para que a função seja executada, são o Em (1) e o Bm (2).
+# Então, a variável (x) enviada na linha 88 controla os tipos de saída.
 
 def Em(x, valor):
+    # Cálculo do Campo Elétrico
     if x == 2:
         Em_Bm = valor*C_velocidadeLuz
-        print('Em (Campo elétrico) = {:.2e}'.format(round_it(Em_Bm)))
-    if x == 3:
+        print('Em (Campo elétrico) = {:.2e} V/m'.format(round_it(Em_Bm)))
+    elif x == 3:
         Em_I = sqrt(2*u0 * C_velocidadeLuz * valor)
-        print('Em (Campo elétrico) = {:.2e}'.format(round_it(Em_I)))
+        print('Em (Campo elétrico) = {:.2e} V/m'.format(round_it(Em_I)))
 def Bm(x, valor):
+    # Cálculo do Campo Magnético
     if x == 1:
         Bm_Em = valor/C_velocidadeLuz
-        print('Bm (Campo Magnetico) = {:.2e}'.format(round_it(Bm_Em)))
-    if x == 3:#errado
-        Bm_I = (1/(2 * u0 * C_velocidadeLuz )) * (C_velocidadeLuz * valor)
-        print('Bm (Campo Magnetico) = {:.2e}'.format(round_it(Bm_I)))
-
+        print('Bm (Campo Magnetico) = {:.2e} T'.format(round_it(Bm_Em)))
+    elif x == 3:
+        Bm_I = sqrt((valor*2*u0)/C_velocidadeLuz)
+        print('Bm (Campo Magnetico) = {:.2e} T'.format(round_it(Bm_I)))
 def I(x,valor):
-    if x == 1:#errado
+    # Cálculo da Intensidade
+    if x == 1:
         I_Em = (valor)**2/(2*u0*C_velocidadeLuz)
-        print('Itensidade (I) = {:.2e}'.format(round_it(I_Em)))
-    if x == 2:#errado
-        I_Em = sqrt(valor * 2 * u0 * C_velocidadeLuz)
-        I_Bm = I_Em / C_velocidadeLuz
-        print('Itensidade (I) = {:.2e}'.format(round_it(I_Bm)))
+        print('Itensidade (I) = {:.2e} W/m²'.format(round_it(I_Em)))
+    elif x == 2:
+        I_Bm = (C_velocidadeLuz*valor**2)/(2*u0)
+        print('Itensidade (I) = {:.2e} W/m²'.format(round_it(I_Bm)))
+
 def f(x, valor):
+    # Cálculo da Frequência
     if x == 5:
         f_compr = C_velocidadeLuz/valor
-        print('f (Frequência) = {:.2e}'.format(round_it(f_compr)))
-    if x == 6:
+        print('f (Frequência) = {:.2e} Hz'.format(round_it(f_compr)))
+    elif x == 6:
         compr = (2*pi)/valor
         f_k = C_velocidadeLuz/compr
-        print('f (Frequência) = {:.2e}'.format(round_it(f_k)))
-    if x == 7:
+        print('f (Frequência) = {:.2e} Hz'.format(round_it(f_k)))
+    elif x == 7:
         f_w = valor/(2*pi)
-        print('f (Frequência) = {:.2e}'.format(round_it(f_w)))
+        print('f (Frequência) = {:.2e} Hz'.format(round_it(f_w)))
 def k(x, valor):
+    # Cálculo do Número de Onda
     if x == 4:
         T = 1/valor
         compr = C_velocidadeLuz*T
         k_f = (2*pi)/compr
-        print('k (Número de onda) = {:.2e}'.format(round_it(k_f)))
-    if x == 5:
+        print('k (Número de onda) = {:.2e} rad/m'.format(round_it(k_f)))
+    elif x == 5:
         k_compr = (2*pi)/valor
-        print('k (Número de onda) = {:.2e}'.format(round_it(k_compr)))
-    if x == 7:
+        print('k (Número de onda) = {:.2e} rad/m'.format(round_it(k_compr)))
+    elif x == 7:
         k_w = valor/C_velocidadeLuz
-        print('k (Número de onda) = {:.2e}'.format(round_it(k_w)))
+        print('k (Número de onda) = {:.2e} rad/m'.format(round_it(k_w)))
 def compr(x, valor):
+    # Cálculo de Comprimento da Onda
     if x == 4:
         compr_f = C_velocidadeLuz/valor
-        print('λ (Comprimento de Onda) = {:.2e}'.format(round_it(compr_f)))
-    if x == 6:
+        print('λ (Comprimento de Onda) = {:.2e} m'.format(round_it(compr_f)))
+    elif x == 6:
         compr_k = (2*pi)/valor
-        print('λ (Comprimento de Onda) = {:.2e}'.format(round_it(compr_k)))
-    if x == 7:
+        print('λ (Comprimento de Onda) = {:.2e} m'.format(round_it(compr_k)))
+    elif x == 7:
         T = (2*pi)/valor
         compr_w =C_velocidadeLuz*T
-        print('λ (Comprimento de Onda) = {:.2e}'.format(round_it(compr_w)))
+        print('λ (Comprimento de Onda) = {:.2e} m'.format(round_it(compr_w)))
 def w(x, valor):
+    # Cálculo do Frequência Angular
     if x == 4:
         w_f = 2*pi*valor
-        print('Frequencia Angular ( W ) = {:.2e}'.format(round_it(w_f)))
-    if x == 5:
+        print('Frequência Angular ( W ) = {:.2e} rad/s'.format(round_it(w_f)))
+    elif x == 5:
         T = valor/C_velocidadeLuz
         w_compr = (2*pi)/T
-        print('Frequencia Angular ( W ) = {:.2e}'.format(round_it(w_compr)))
-    if x == 6:
+        print('Frequência Angular ( W ) = {:.2e} rad/s'.format(round_it(w_compr)))
+    elif x == 6:
         w_k = C_velocidadeLuz * valor
-        print('Frequencia Angular ( W ) = {:.2e}'.format(round_it(w_k)))
+        print('Frequência Angular ( W ) = {:.2e} rad/s'.format(round_it(w_k)))
 
 menu()
